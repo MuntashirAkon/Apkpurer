@@ -35,6 +35,12 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
         super.onViewCreated(view, savedInstanceState)
 
 
+        (requireContext() as MainActivity).apply {
+            title = "Search"
+            back(false)
+        }
+
+
         searchEd.addTextChangedListener(this)
         searchEd.setOnEditorActionListener(this)
         suggestionsLv.adapter = adapter

@@ -26,7 +26,7 @@
                 android:id="@+id/logoIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher"/>
+                android:src="@drawable/ic_baseline_hourglass_bottom_24"/>
 
             <TextView
                 android:id="@+id/titleTv"
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 tools:text="App Name"
                 android:layout_marginTop="10dp"
-                style="@style/TextAppearance.AppCompat.Body1"/>
+                style="@style/TextAppearance.AppCompat.Headline"/>
 
             </LinearLayout>
 

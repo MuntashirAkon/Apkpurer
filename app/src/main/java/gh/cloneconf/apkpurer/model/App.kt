@@ -15,7 +15,7 @@ class AppPage(
     logo: String,
     val description : String,
     val images : List<String>,
-    val download : String,
+    val download : String?,
     val size : String,
     score: String?,
     dev: String

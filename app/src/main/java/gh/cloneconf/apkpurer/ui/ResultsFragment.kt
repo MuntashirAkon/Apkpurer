@@ -58,7 +58,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                     val result = item as App
 
                     holder.itemView.setOnClickListener{
-                        showApp(result.id)
+                        showApp(result)
                     }
 
                     holder.titleTv.text = result.name
@@ -66,7 +66,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                     holder.devTv.text = result.dev
                     Picasso.get()
                         .load(result.logo)
-                        .placeholder(requireContext().getDrawable(R.mipmap.ic_launcher)!!)
+                        .placeholder(requireContext().getDrawable(R.drawable.ic_baseline_hourglass_bottom_24)!!)
                         .into(holder.logoIv)
 
                 }
@@ -84,14 +84,16 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
     }
 
-    fun showApp(id : String){
+    fun showApp(app : App){
 
         val fragment = AppFragment()
         fragment.arguments = Bundle().apply {
-            putString("id", id)
+            putString("id", app.id)
         }
 
-        (requireActivity() as MainActivity).goTo(fragment)
+        (requireActivity() as MainActivity).apply {
+            title = app.name
+        }.goTo(fragment)
     }
 
     val adapter by lazy {
@@ -104,6 +106,11 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (requireContext() as MainActivity).apply {
+            title = q
+            back(true)
+        }
 
         resultsRv.layoutManager = LinearLayoutManager(requireContext())
         resultsRv.adapter = adapter
@@ -119,7 +126,6 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                 try {
                     if (!resultsRv.canScrollVertically(1)) {
                         download()
-                        (adapter.results.last() as View)
                     }
                 }catch (e:Exception){}
         }
@@ -146,9 +152,6 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
             val results =Apkpurer.getResults(q, page)
 
             more = results.more
-
-            println(results.apps.size)
-            println(results.more)
 
             withContext(Dispatchers.Main){
 

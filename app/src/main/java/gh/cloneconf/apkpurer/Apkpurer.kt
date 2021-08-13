@@ -96,10 +96,12 @@ object Apkpurer {
                     add(it.attr("src"))
                 }
             },
-            download = doc.selectFirst(".ny-down a.da")!!.attr("href"),
+            download = try {
+                doc.selectFirst(".ny-down a.da")!!.attr("href")
+            }catch (e:Exception){null},
             score = "hj",
             dev = doc.select(".publisher a").text(),
-            size = doc.selectFirst(".fsize")!!.text()
+            size = doc.selectFirst(".fsize")!!.text().replace(Regex("""[\(\)]"""), "")
         )
     }
 }

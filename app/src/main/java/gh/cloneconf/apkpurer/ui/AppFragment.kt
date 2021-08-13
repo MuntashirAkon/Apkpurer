@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import gh.cloneconf.apkpurer.Apkpurer
+import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
 import kotlinx.android.synthetic.main.fragment_app.*
 import kotlinx.android.synthetic.main.item_image.view.*
@@ -25,6 +26,9 @@ import kotlinx.coroutines.*
 class AppFragment : Fragment(R.layout.fragment_app) {
 
 
+    val id by lazy {
+        requireArguments().getString("id")!!
+    }
     inner class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>(){
 
         val images = ArrayList<String>()
@@ -39,7 +43,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
             Picasso.get()
                 .load(images[position])
-                .placeholder(requireContext().getDrawable(R.mipmap.ic_launcher)!!)
+                .placeholder(requireContext().getDrawable(R.drawable.ic_baseline_hourglass_bottom_24)!!)
                 .into(holder.itemView.imageIv)
 
         }
@@ -65,6 +69,10 @@ class AppFragment : Fragment(R.layout.fragment_app) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (requireContext() as MainActivity).apply {
+            back(true)
+        }
+
         imagesRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         imagesRv.adapter = adapter
 
@@ -72,9 +80,11 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
         job= lifecycleScope.launch(Dispatchers.IO) {
             val app =
-                Apkpurer.getApp(requireArguments().getString("id")!!)
+                Apkpurer.getApp(id)
 
             withContext(Dispatchers.Main){
+
+
                 titleTv.text = app.name
 
                 Picasso.get()
@@ -91,17 +101,26 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
 
 
-            val doc = Apkpurer.getDoc("https://apkpure.com"+app.download)
+            if (app.download != null) {
 
-            withContext(Dispatchers.Main){
-                downloadBtn.isEnabled = true
+                val doc = Apkpurer.getDoc("https://apkpure.com" + app.download)
 
-                downloadBtn.setOnClickListener {
-                    val url = doc.select("#iframe_download").attr("src")
-                    val i = Intent(Intent.ACTION_VIEW)
-                    i.data = Uri.parse(url)
-                    startActivity(i)
+                withContext(Dispatchers.Main) {
+                    downloadBtn.isEnabled = true
+
+                    downloadBtn.setOnClickListener {
+                        val url = doc.select("#iframe_download").attr("src")
+                        val i = Intent(Intent.ACTION_VIEW)
+                        i.data = Uri.parse(url)
+                        startActivity(i)
+                    }
                 }
+            }else{
+
+                withContext(Dispatchers.Main){
+                    downloadBtn.text = "ERROR!"
+                }
+
             }
         }
     }
