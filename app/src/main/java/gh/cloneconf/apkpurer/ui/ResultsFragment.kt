@@ -14,10 +14,7 @@ import gh.cloneconf.apkpurer.R
 import gh.cloneconf.apkpurer.model.App
 import kotlinx.android.synthetic.main.fragment_results.*
 import kotlinx.android.synthetic.main.item_result.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.lang.Exception
 
 class ResultsFragment : Fragment(R.layout.fragment_results) {
@@ -135,7 +132,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
     override fun onPause() {
         super.onPause()
-        lifecycleScope.cancel()
+        job?.cancel()
         busy = false
     }
 
@@ -143,12 +140,13 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
     var more = false
     var busy = false
 
+    var job : Job? = null
 
     fun download(){
         busy = true
         if (page == 1)
             adapter.add(1)
-        lifecycleScope.launch(Dispatchers.IO) {
+        job = lifecycleScope.launch(Dispatchers.IO) {
             val results =Apkpurer.getResults(q, page)
 
             more = results.more

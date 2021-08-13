@@ -78,7 +78,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
 
 
-        job= lifecycleScope.launch(Dispatchers.IO) {
+        job = lifecycleScope.launch(Dispatchers.IO) {
             val app =
                 Apkpurer.getApp(id)
 

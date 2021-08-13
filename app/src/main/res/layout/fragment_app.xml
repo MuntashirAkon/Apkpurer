@@ -20,7 +20,8 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="20dp"
+                android:paddingTop="40dp"
+                android:paddingBottom="40dp"
                 android:background="?colorPrimary">
             <ImageView
                 android:id="@+id/logoIv"
