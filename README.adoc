@@ -1,0 +1,9 @@
+= Apkpurer
+
+image::fastlane/metadata/android/en-US/images/icon.png[width=100]
+
+
+Simple client for apkpure.com.
+
+image::showcase.gif[width=300]
+
