@@ -6,15 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
-import gh.cloneconf.apkpurer.Apkpurer
+import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -38,6 +36,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
         (requireContext() as MainActivity).apply {
             title = "Search"
             back(false)
+            settings(true)
         }
 
 
@@ -48,12 +47,16 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
 
     }
 
-    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-    }
 
     var job : Job? = null
 
+
+    /**
+     * On user types.
+     */
+    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+    override fun afterTextChanged(p0: Editable?) {}
     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         job?.cancel()
 
@@ -89,24 +92,40 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
         }
     }
 
-    override fun afterTextChanged(p0: Editable?) {
 
-    }
-
+    /**
+     * On enter.
+     */
     override fun onEditorAction(p0: TextView?, p1: Int, p2: KeyEvent?): Boolean {
         showResults(searchEd.text.toString())
         return true
     }
 
 
+    /**
+     * On item clicked from list.
+     */
+    override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        showResults(adapter.getItem(p2)!!)
+    }
+
+
+
+
+
+
+    /**
+     * Send to results fragment.
+     */
     fun showResults(q:String){
         val fragment = ResultsFragment()
         fragment.arguments = Bundle().apply {
             putString("q", q)
         }
-
         (requireActivity() as MainActivity).goTo(fragment)
     }
+
+
 
 
     /**
@@ -134,8 +153,5 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
 
     }
 
-    override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        showResults(adapter.getItem(p2)!!)
-    }
 }
 

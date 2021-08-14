@@ -22,7 +22,7 @@
             android:id="@+id/titleTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/primary"
+            android:textColor="@color/primary_dark"
             tools:text="App Name"/>
         <TextView
             android:id="@+id/devTv"

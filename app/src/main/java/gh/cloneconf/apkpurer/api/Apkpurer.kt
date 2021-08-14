@@ -1,4 +1,4 @@
-package gh.cloneconf.apkpurer
+package gh.cloneconf.apkpurer.api
 
 import gh.cloneconf.apkpurer.model.App
 import gh.cloneconf.apkpurer.model.AppPage

@@ -1,12 +1,9 @@
 package gh.cloneconf.apkpurer.ui
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -14,8 +11,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import gh.cloneconf.apkpurer.Apkpurer
+import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
 import gh.cloneconf.apkpurer.model.App
@@ -26,11 +24,55 @@ import java.lang.Exception
 
 class ResultsFragment : Fragment(R.layout.fragment_results) {
 
+    val jobs = ArrayList<Job>()
+
     val q by lazy {
         requireArguments().getString("q")!!
     }
 
 
+    val settings by lazy {
+        (requireActivity() as MainActivity).settings
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Ui update.
+        (requireContext() as MainActivity).apply {
+            title = q
+            back(true)
+            settings(true)
+        }
+
+
+        resultsRv.layoutManager = LinearLayoutManager(requireContext())
+        resultsRv.adapter = adapter
+
+
+        if (page == 1) {
+            download()
+        }
+
+        resultsRv.viewTreeObserver.addOnScrollChangedListener {
+            if (more && !busy)
+                try {
+                    if (!resultsRv.canScrollVertically(1)) {
+                        download()
+                    }
+                }catch (e:Exception){}
+        }
+
+
+    }
+
+
+
+
+    /**
+     * Results Adapter.
+     */
     inner class ResultAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         val results = ArrayList<Any>()
 
@@ -59,27 +101,44 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
             val item = results[position]
             when (holder){
                 is ResultViewHolder -> {
-                    val result = item as App
 
-                    holder.itemView.setOnClickListener{
-                        showApp(result)
-                    }
+                    jobs.add(lifecycleScope.launch {
+                        val result = item as App
 
-                    holder.titleTv.text = result.name
+                        holder.itemView.setOnClickListener {
+                            showApp(result)
+                        }
 
-                    holder.devTv.text = result.dev
+                        holder.titleTv.text = result.name
+
+                        holder.devTv.text = result.dev
 
 
-                    val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
+
+                        val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
 
 
-                    val canvas = Canvas(bm)
-                    canvas.drawColor(Color.argb(100, 221,221,221))
+                        val canvas = Canvas(bm)
+                        canvas.drawColor(Color.argb(100, 221, 221, 221))
 
-                    Picasso.get()
-                        .load(result.logo)
-                        .placeholder(BitmapDrawable(requireContext().resources, bm))
-                        .into(holder.logoIv)
+
+                        if (settings.liteMode) {
+                            holder.logoIv.setImageBitmap(bm)
+                        }else{
+                            val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
+
+
+                            val canvas = Canvas(bm)
+                            canvas.drawColor(Color.argb(100, 221, 221, 221))
+
+                            Picasso.get()
+                                .load(result.logo)
+                                .placeholder(BitmapDrawable(requireContext().resources, bm))
+                                .into(holder.logoIv)
+                        }
+
+
+                    })
 
                 }
             }
@@ -96,16 +155,21 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
     }
 
+
+
+
+    /**
+     * Send to app fragment.
+     */
+
     fun showApp(app : App){
 
         val fragment = AppFragment()
         fragment.arguments = Bundle().apply {
-            putString("id", app.id)
+            putString("app", Gson().toJson(app))
         }
 
-        (requireActivity() as MainActivity).apply {
-            title = app.name
-        }.goTo(fragment)
+        (requireActivity() as MainActivity).goTo(fragment)
     }
 
     val adapter by lazy {
@@ -113,56 +177,27 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
     }
 
 
-
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        (requireContext() as MainActivity).apply {
-            title = q
-            back(true)
-        }
-
-        resultsRv.layoutManager = LinearLayoutManager(requireContext())
-        resultsRv.adapter = adapter
-
-
-        if (page == 1) {
-            download()
-        }
-
-
-        resultsRv.viewTreeObserver.addOnScrollChangedListener {
-            if (more && !busy)
-                try {
-                    if (!resultsRv.canScrollVertically(1)) {
-                        download()
-                    }
-                }catch (e:Exception){}
-        }
-
-
-    }
-
+    /**
+     * Cancel all jobs when it's inactive.
+     */
     override fun onPause() {
         super.onPause()
-        job?.cancel()
-        busy = false
+        jobs.forEach {
+            it.cancel()
+        }
     }
 
     var page = 1
     var more = false
     var busy = false
 
-    var job : Job? = null
 
-    fun download(){
+    private fun download(){
         busy = true
         if (page == 1)
             adapter.add(1)
-        job = lifecycleScope.launch(Dispatchers.IO) {
-            val results =Apkpurer.getResults(q, page)
+        jobs.add(lifecycleScope.launch(Dispatchers.IO) {
+            val results = Apkpurer.getResults(q, page)
 
             more = results.more
 
@@ -182,6 +217,6 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
             page++
             busy = false
-        }
+        })
     }
 }

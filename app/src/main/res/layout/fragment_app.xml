@@ -33,12 +33,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/cProgress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:indeterminate="true"
-                        android:layout_gravity="center"/>
                 </FrameLayout>
 
                 <TextView
@@ -47,6 +41,8 @@
                     android:layout_height="wrap_content"
                     tools:text="App Name"
                     android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     style="@style/TextAppearance.AppCompat.Headline"/>
                 <TextView
                     android:id="@+id/devTv"
@@ -55,9 +51,18 @@
                     tools:text="Developer"
                     android:layout_marginTop="10dp"
                     style="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/primary_dark"/>
+                    android:textColor="@color/primary"/>
 
             </LinearLayout>
+
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/cProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_gravity="center"
+                android:padding="20dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/imagesRv"
@@ -87,7 +92,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="20dp"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:padding="10dp"/>
 
 
 </RelativeLayout>
