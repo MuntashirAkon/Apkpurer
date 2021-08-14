@@ -1,5 +1,12 @@
 package gh.cloneconf.apkpurer.ui
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -61,9 +68,17 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                     holder.titleTv.text = result.name
 
                     holder.devTv.text = result.dev
+
+
+                    val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
+
+
+                    val canvas = Canvas(bm)
+                    canvas.drawColor(Color.argb(100, 221,221,221))
+
                     Picasso.get()
                         .load(result.logo)
-                        .placeholder(requireContext().getDrawable(R.drawable.ic_baseline_hourglass_bottom_24)!!)
+                        .placeholder(BitmapDrawable(requireContext().resources, bm))
                         .into(holder.logoIv)
 
                 }

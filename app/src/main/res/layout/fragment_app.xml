@@ -22,20 +22,40 @@
                 android:gravity="center"
                 android:paddingTop="40dp"
                 android:paddingBottom="40dp"
-                android:background="?colorPrimary">
-            <ImageView
-                android:id="@+id/logoIv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_hourglass_bottom_24"/>
+                android:background="@color/primary_dark">
 
-            <TextView
-                android:id="@+id/titleTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="App Name"
-                android:layout_marginTop="10dp"
-                style="@style/TextAppearance.AppCompat.Headline"/>
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/logoIv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/cProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/titleTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="App Name"
+                    android:layout_marginTop="10dp"
+                    style="@style/TextAppearance.AppCompat.Headline"/>
+                <TextView
+                    android:id="@+id/devTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Developer"
+                    android:layout_marginTop="10dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_dark"/>
 
             </LinearLayout>
 

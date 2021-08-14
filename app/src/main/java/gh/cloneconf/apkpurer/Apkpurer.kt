@@ -2,6 +2,7 @@ package gh.cloneconf.apkpurer
 
 import gh.cloneconf.apkpurer.model.App
 import gh.cloneconf.apkpurer.model.AppPage
+import gh.cloneconf.apkpurer.model.DevPage
 import gh.cloneconf.apkpurer.model.Search
 import okhttp3.*
 import org.json.JSONArray
@@ -99,11 +100,38 @@ object Apkpurer {
             download = try {
                 doc.selectFirst(".ny-down a.da")!!.attr("href")
             }catch (e:Exception){null},
-            score = "hj",
-            dev = doc.select(".publisher a").text(),
+            score = try{
+                       doc.select(".rating .average").text()
+                   }catch (e:Exception){""},
+            dev = doc.select(".details-author > p > a").text(),
             size = doc.selectFirst(".fsize")!!.text().replace(Regex("""[\(\)]"""), "")
         )
     }
-}
+
+    fun getDevPage(dev : String): DevPage {
+        val url = "https://apkpure.com/developer/$dev"
+        val doc = getDoc(url)
+
+
+        return DevPage(
+            name = try {
+                doc.select("h1.developer-name").text()
+            }catch (e:Exception){dev},
+            apps = ArrayList<App>().apply {
+                    try {
+                        doc.select(".search-dl").forEach {
+                            add(App(
+                                id = it.select(".search-title a").attr("href"),
+                                name = it.select(".search-title").text(),
+                                logo = it.select("img").attr("src"),
+                                score = it.select(".star").text(),
+                                dev = dev
+                            ))
+                        }
+                    }catch (e:Exception){}
+                }
+            )
+        }
+    }
 
 
