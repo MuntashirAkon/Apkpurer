@@ -135,6 +135,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                                 .load(result.logo)
                                 .placeholder(BitmapDrawable(requireContext().resources, bm))
                                 .into(holder.logoIv)
+
                         }
 
 

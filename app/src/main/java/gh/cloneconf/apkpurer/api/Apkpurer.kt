@@ -1,9 +1,6 @@
 package gh.cloneconf.apkpurer.api
 
-import gh.cloneconf.apkpurer.model.App
-import gh.cloneconf.apkpurer.model.AppPage
-import gh.cloneconf.apkpurer.model.DevPage
-import gh.cloneconf.apkpurer.model.Search
+import gh.cloneconf.apkpurer.model.*
 import okhttp3.*
 import org.json.JSONArray
 import org.jsoup.Jsoup
@@ -92,9 +89,12 @@ object Apkpurer {
             logo = doc.select(".icon img").attr("src"),
             id= "df",
             description =  doc.select(".description .content").html(),
-            images = ArrayList<String>().apply {
+            images = ArrayList<Image>().apply {
                 doc.select("a.mpopup img").forEach {
-                    add(it.attr("src"))
+                    add(Image(
+                        thumb = it.attr("src"),
+                        original = it.attr("srcset").split(" ").first()
+                    ))
                 }
             },
             download = try {

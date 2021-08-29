@@ -16,14 +16,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
+import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.model.App
+import gh.cloneconf.apkpurer.model.Image
 import kotlinx.android.synthetic.main.fragment_app.*
 import kotlinx.android.synthetic.main.item_image.view.*
 import kotlinx.android.synthetic.main.item_result.logoIv
 import kotlinx.android.synthetic.main.item_result.titleTv
+import kotlinx.android.synthetic.main.item_zoom_image.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -44,7 +46,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
     }
     inner class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>(){
 
-        val images = ArrayList<String>()
+        val images = ArrayList<Image>()
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {}
 
@@ -60,10 +62,20 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             val canvas = Canvas(bm)
             canvas.drawColor(Color.argb(100, 221,221,221))
 
+
             Picasso.get()
-                .load(images[position])
+                .load(images[position].thumb)
                 .placeholder(BitmapDrawable(requireContext().resources, bm))
                 .into(holder.itemView.imageIv)
+
+
+            holder.itemView.imageIv.setOnClickListener {
+                viewerRl.visibility = View.VISIBLE
+                viewPager2.visibility = View.VISIBLE
+                viewPager2.setCurrentItem(position, false)
+                (requireActivity() as MainActivity).imageViewer = true
+            }
+
 
         }
 
@@ -85,6 +97,37 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
     var job : Job? = null
 
+
+    inner class ViewPagerAdapter : RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>(){
+        val images = ArrayList<Image>()
+
+
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val image = itemView.zoomView
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return ViewHolder(layoutInflater.inflate(R.layout.item_zoom_image, parent, false))
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+
+
+            Picasso.get()
+                .load(images[position].original)
+                .into(holder.image)
+
+
+        }
+
+        override fun getItemCount(): Int {
+            return images.size
+        }
+
+    }
+
+    val viewPagerAdapter = ViewPagerAdapter()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -94,6 +137,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             settings(true)
         }
 
+        viewPager2.adapter = viewPagerAdapter
 
         titleTv.text = app.name
 
@@ -113,10 +157,13 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             val canvas = Canvas(bm)
             canvas.drawColor(Color.argb(100, 221, 221, 221))
 
+
             Picasso.get()
                 .load(app.logo)
                 .placeholder(BitmapDrawable(requireContext().resources, bm))
                 .into(logoIv)
+
+
 
 
             imagesRv.layoutManager =
@@ -136,6 +183,8 @@ class AppFragment : Fragment(R.layout.fragment_app) {
                 downloadBtn.visibility = View.VISIBLE
 
 
+                viewPagerAdapter.images.addAll(app.images)
+                viewPagerAdapter.notifyDataSetChanged()
 
                 descTv.text = Html.fromHtml(app.description)
 
@@ -172,4 +221,5 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             }
         }
     }
+
 }

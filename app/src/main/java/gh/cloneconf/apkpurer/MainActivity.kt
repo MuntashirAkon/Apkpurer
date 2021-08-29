@@ -4,21 +4,28 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.fragment.app.Fragment
 import gh.cloneconf.apkpurer.api.SettingsApi
+import gh.cloneconf.apkpurer.ui.AppFragment
 import gh.cloneconf.apkpurer.ui.SearchFragment
 import gh.cloneconf.apkpurer.ui.SettingsFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_app.*
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
     val settings by lazy { SettingsApi(this) }
 
+    var imageViewer = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        if (savedInstanceState != null) return
 
         goTo(SearchFragment())
     }
@@ -68,6 +75,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+
+        if (imageViewer){
+            imageViewer = false
+            (supportFragmentManager.fragments.last() as AppFragment).viewerRl.visibility = View.GONE
+            toolbar.visibility = View.VISIBLE
+            return
+        }
+
         if (supportFragmentManager.fragments.last() is SearchFragment)
             finish()
         else
@@ -78,4 +93,5 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(b)
         supportActionBar?.setDisplayHomeAsUpEnabled(b)
     }
+
 }
