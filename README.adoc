@@ -2,9 +2,6 @@
 
 image::fastlane/metadata/android/en-US/images/icon.png[width=100]
 
-== Contributions are welcome :)
-I know though that my code is very messy '-'
-
 image::https://fdroid.gitlab.io/artwork/badge/get-it-on.png[width=200, link=https://f-droid.org/en/packages/gh.cloneconf.apkpurer/]
 
 
