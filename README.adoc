@@ -1,14 +1,20 @@
 = Apkpurer
 
-image::fastlane/metadata/android/en-US/images/icon.png[width=100]
+image::fastlane/metadata/an- Glide
+- Okhttp
+droid/en-US/images/icon.png[width=100]
 
 image::https://fdroid.gitlab.io/artwork/badge/get-it-on.png[width=200, link=https://f-droid.org/en/packages/gh.cloneconf.apkpurer/]
-
+or see link:#apks[Downloads] section.
 
 Simple client for apkpure.com.
 
 image::showcase.gif[width=300]
 
 
-## APKs:
-https://github.com/cloneconf/Apkpurer/releases/download/v3.0/app-release.apk[Version 3]
+## Downloads:
+https://github.com/cloneconf/Apkpurer/releases/download/v3.0/app-release.apk[Download APK Version 3]
+
+
+## Credits:
+All the libraries used is in https://github.com/cloneconf/Apkpurer/blob/d2d2e85d1d3852840c82e3afed65a2f0a4860f9f/app/build.gradle#L39-L76[build.gradle] file. 
