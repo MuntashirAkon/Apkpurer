@@ -15,4 +15,4 @@ https://github.com/cloneconf/Apkpurer/releases/download/v3.0/app-release.apk[Dow
 
 
 ## Credits:
-All the libraries used is in https://github.com/cloneconf/Apkpurer/blob/c6f3e01e4492196b63309ad8d40c3c7af3e00e0d/app/build.gradle#L41-L74[build.gradle] file. 
+All the libraries used are in https://github.com/cloneconf/Apkpurer/blob/c6f3e01e4492196b63309ad8d40c3c7af3e00e0d/app/build.gradle#L41-L74[build.gradle] file. 
