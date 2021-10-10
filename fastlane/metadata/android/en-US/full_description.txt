@@ -2,3 +2,6 @@ Simple client for apkpure.
 
 Feel free to submit an issue on github:
 https://github.com/cloneconf/Apkpurer
+
+showcase:
+https://github.com/cloneconf/Apkpurer/raw/master/showcase.gif
