@@ -1,16 +1,26 @@
 package gh.cloneconf.apkpurer.api
 
+import android.content.Context
 import gh.cloneconf.apkpurer.model.*
 import okhttp3.*
 import org.json.JSONArray
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.util.concurrent.TimeUnit
 
 
 object Apkpurer {
 
-    var client = OkHttpClient().newBuilder()
-        .build()
+    lateinit var client: OkHttpClient
+
+    fun init( c : Context){
+        client = OkHttpClient().newBuilder()
+            .followRedirects(false)
+            .followSslRedirects(false)
+            .retryOnConnectionFailure(false)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
 
 
     const val BASE = "apkpure.com/"
@@ -25,7 +35,7 @@ object Apkpurer {
             .build()
 
         call = client.newCall(request)
-        return call!!.execute().body!!.string()
+        return call!!.execute().body()!!.string()
     }
 
 

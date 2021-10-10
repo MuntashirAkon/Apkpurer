@@ -1,1 +1,1 @@
-Client for apkpure.
+Simple way to browse apkpure.

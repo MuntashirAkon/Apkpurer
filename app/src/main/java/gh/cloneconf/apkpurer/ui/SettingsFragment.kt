@@ -19,7 +19,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         (requireActivity() as MainActivity).apply {
             title = getString(R.string.settings)
             back(true)
-            settings(false)
         }
 
 

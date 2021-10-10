@@ -1,0 +1,8 @@
+# v3
+- Improving ui.
+- fixed some bugs in image viewer. 
+- Supports for 4.4+
+- Implementing crash handler.
+- moving from Picasso to Glide to make images faster.
+
+Enjoy :)

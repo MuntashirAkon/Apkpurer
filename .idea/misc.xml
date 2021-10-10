@@ -3,10 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.190625" />
         <entry key="app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.23229166666666667" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.24739583333333334" />
-        <entry key="app/src/main/res/layout/fragment_app.xml" value="0.19589257503949448" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_app.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_dev.xml" value="0.1078125" />
+        <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.846875" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.15625" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.25794871794871793" />
         <entry key="app/src/main/res/layout/fragment_results.xml" value="0.14427083333333332" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.14427083333333332" />
@@ -14,6 +17,7 @@
         <entry key="app/src/main/res/layout/item_image.xml" value="0.23802083333333332" />
         <entry key="app/src/main/res/layout/item_loading.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_result.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/item_suggestion.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_zoom_image.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.25" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_android.xml" value="0.12708333333333333" />

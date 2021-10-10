@@ -4,17 +4,20 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
+import gh.cloneconf.apkpurer.databinding.FragmentSearchBinding
+import gh.cloneconf.apkpurer.databinding.ItemSuggestionBinding
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,28 +25,47 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
-    TextView.OnEditorActionListener, AdapterView.OnItemClickListener {
+    TextView.OnEditorActionListener {
 
 
-    val adapter by lazy {
-        ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1)
+    private val adapter by lazy { Adapter() }
+    private val suggestions = ArrayList<String>()
+
+    private lateinit var binds : FragmentSearchBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binds = FragmentSearchBinding.inflate(inflater)
+        return binds.root
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
         (requireContext() as MainActivity).apply {
-            title = "Search"
+            title = getString(R.string.app_name)
             back(false)
-            settings(true)
         }
 
 
         searchEd.addTextChangedListener(this)
         searchEd.setOnEditorActionListener(this)
-        suggestionsLv.adapter = adapter
-        suggestionsLv.setOnItemClickListener(this)
+
+        binds.apply {
+            suggestionsRv.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+            }.adapter = adapter
+        }
 
     }
 
@@ -64,7 +86,8 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
 
         if (q.isEmpty()) {
             statusIv.setImageResource(R.drawable.ic_baseline_tag_faces_24)
-            adapter.clear()
+            suggestions.clear()
+            adapter.notifyDataSetChanged()
             return
         }
 
@@ -81,8 +104,10 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
                     }
 
                     statusIv.setImageResource(R.drawable.ic_baseline_check_24)
-                    adapter.clear()
-                    adapter.addAll(suggestions)
+                    this@SearchFragment.suggestions.apply {
+                        clear()
+                    }.addAll(suggestions)
+                    adapter.notifyDataSetChanged()
                 }
             }catch (e:Exception){
                 withContext(Dispatchers.Main){
@@ -102,27 +127,41 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
     }
 
 
-    /**
-     * On item clicked from list.
-     */
-    override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        showResults(adapter.getItem(p2)!!)
+
+    inner class Adapter: RecyclerView.Adapter<Adapter.ViewHolder>(){
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val binds = ItemSuggestionBinding.bind(itemView)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(layoutInflater.inflate(R.layout.item_suggestion, parent, false))
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.binds.apply {
+                nameTv.text = suggestions[position]
+
+                root.setOnClickListener {
+                    showResults(suggestions[position])
+                }
+            }
+        }
+
+        override fun getItemCount() = suggestions.size
     }
-
-
-
-
 
 
     /**
      * Send to results fragment.
      */
-    fun showResults(q:String){
+    private fun showResults(q:String){
         val fragment = ResultsFragment()
         fragment.arguments = Bundle().apply {
             putString("q", q)
         }
-        (requireActivity() as MainActivity).goTo(fragment)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fContainer, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
 
@@ -146,12 +185,38 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
     override fun onPause() {
         super.onPause()
         searchEd.text.clear()
-        adapter.clear()
+        suggestions.clear()
+        adapter.notifyDataSetChanged()
 
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(searchEd.windowToken, 0)
 
     }
+
+
+
+    /**
+     * Menu
+     */
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId){
+            R.id.settings -> {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fContainer, SettingsFragment())
+                    .addToBackStack(null)
+                    .commit()
+                true
+            }
+            else -> false
+        }
+    }
+
 
 }
 

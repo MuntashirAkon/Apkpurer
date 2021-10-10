@@ -8,11 +8,12 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
@@ -43,7 +44,6 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
         (requireContext() as MainActivity).apply {
             title = q
             back(true)
-            settings(true)
         }
 
 
@@ -123,7 +123,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
 
                         if (settings.liteMode) {
-                            holder.logoIv.setImageBitmap(bm)
+                            holder.logoIv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.mipmap.ic_launcher))
                         }else{
                             val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
 
@@ -131,7 +131,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                             val canvas = Canvas(bm)
                             canvas.drawColor(Color.argb(100, 221, 221, 221))
 
-                            Picasso.get()
+                            Glide.with(this@ResultsFragment)
                                 .load(result.logo)
                                 .placeholder(BitmapDrawable(requireContext().resources, bm))
                                 .into(holder.logoIv)
@@ -170,7 +170,11 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
             putString("app", Gson().toJson(app))
         }
 
-        (requireActivity() as MainActivity).goTo(fragment)
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fContainer, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     val adapter by lazy {

@@ -1,5 +1,6 @@
 package gh.cloneconf.apkpurer.ui
 
+import android.content.ClipData
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -10,12 +11,14 @@ import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
 import gh.cloneconf.apkpurer.api.Apkpurer
@@ -30,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class AppFragment : Fragment(R.layout.fragment_app) {
 
@@ -44,6 +48,10 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             App::class.java
         )
     }
+
+
+
+
     inner class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>(){
 
         val images = ArrayList<Image>()
@@ -63,17 +71,18 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             canvas.drawColor(Color.argb(100, 221,221,221))
 
 
-            Picasso.get()
+            Glide.with(this@AppFragment)
                 .load(images[position].thumb)
                 .placeholder(BitmapDrawable(requireContext().resources, bm))
                 .into(holder.itemView.imageIv)
 
 
+
             holder.itemView.imageIv.setOnClickListener {
-                viewerRl.visibility = View.VISIBLE
-                viewPager2.visibility = View.VISIBLE
-                viewPager2.setCurrentItem(position, false)
-                (requireActivity() as MainActivity).imageViewer = true
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fContainer, GalleryFragment.newInstance(images, position))
+                    .addToBackStack(null)
+                    .commit()
             }
 
 
@@ -98,46 +107,13 @@ class AppFragment : Fragment(R.layout.fragment_app) {
     var job : Job? = null
 
 
-    inner class ViewPagerAdapter : RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>(){
-        val images = ArrayList<Image>()
-
-
-        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val image = itemView.zoomView
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(layoutInflater.inflate(R.layout.item_zoom_image, parent, false))
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-
-
-            Picasso.get()
-                .load(images[position].original)
-                .into(holder.image)
-
-
-        }
-
-        override fun getItemCount(): Int {
-            return images.size
-        }
-
-    }
-
-    val viewPagerAdapter = ViewPagerAdapter()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         (requireContext() as MainActivity).apply {
             title = app.name
             back(true)
-            settings(true)
         }
-
-        viewPager2.adapter = viewPagerAdapter
 
         titleTv.text = app.name
 
@@ -158,7 +134,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             canvas.drawColor(Color.argb(100, 221, 221, 221))
 
 
-            Picasso.get()
+            Glide.with(this)
                 .load(app.logo)
                 .placeholder(BitmapDrawable(requireContext().resources, bm))
                 .into(logoIv)
@@ -183,10 +159,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
                 downloadBtn.visibility = View.VISIBLE
 
 
-                viewPagerAdapter.images.addAll(app.images)
-                viewPagerAdapter.notifyDataSetChanged()
-
-                descTv.text = Html.fromHtml(app.description)
+                descTv.text = HtmlCompat.fromHtml(app.description, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
 
                 adapter.images.addAll(app.images)
@@ -204,12 +177,19 @@ class AppFragment : Fragment(R.layout.fragment_app) {
                 withContext(Dispatchers.Main) {
                     downloadBtn.isEnabled = true
 
-
                     downloadBtn.setOnClickListener {
+
                         val url = doc.select("#iframe_download").attr("src")
-                        val i = Intent(Intent.ACTION_VIEW)
-                        i.data = Uri.parse(url)
-                        startActivity(i)
+                        try {
+                            val i = Intent(Intent.ACTION_VIEW)
+                            i.data = Uri.parse(url)
+                            startActivity(i)
+                        }catch (e:Exception){
+                            Toast.makeText(requireContext(), "No Browser founded.. (Copied !)", Toast.LENGTH_SHORT).show()
+
+                            (requireContext() as MainActivity).clipboardManager.setPrimaryClip(
+                                ClipData.newPlainText("url", url))
+                        }
                     }
                 }
             }else{
@@ -221,5 +201,6 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             }
         }
     }
+
 
 }

@@ -25,10 +25,12 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:maxLines="1"
-            android:imeOptions="actionSearch" />
+            android:imeOptions="actionSearch"
+            android:hint="Start searching ..."/>
     </LinearLayout>
-    <ListView
-        android:id="@+id/suggestionsLv"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/suggestionsRv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
