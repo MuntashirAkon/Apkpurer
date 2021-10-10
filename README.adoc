@@ -9,3 +9,6 @@ Simple client for apkpure.com.
 
 image::showcase.gif[width=300]
 
+```
+include::app/build.gradle[lines=40..73]
+```
