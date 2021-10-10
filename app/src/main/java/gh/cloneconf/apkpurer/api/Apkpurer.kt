@@ -19,6 +19,7 @@ object Apkpurer {
             .followSslRedirects(false)
             .retryOnConnectionFailure(false)
             .connectTimeout(30, TimeUnit.SECONDS)
+            .cache(Cache(c.filesDir, 3000))
             .build()
     }
 
