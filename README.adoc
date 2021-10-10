@@ -9,3 +9,6 @@ Simple client for apkpure.com.
 
 image::showcase.gif[width=300]
 
+
+## APKs:
+https://github.com/cloneconf/Apkpurer/releases/download/v3.0/app-release.apk[Version 3]
