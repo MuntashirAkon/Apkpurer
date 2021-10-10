@@ -4,5 +4,6 @@
 - Supports for 4.4+
 - Implementing crash handler.
 - moving from Picasso to Glide to make images faster.
+- caching 3mb.
 
 Enjoy :)
