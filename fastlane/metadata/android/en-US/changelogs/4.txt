@@ -1,0 +1,2 @@
+- some ui changes.
+- improving galery viewer.
