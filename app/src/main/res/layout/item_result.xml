@@ -18,7 +18,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginStart="10dp">
         <TextView
             style="@style/TextAppearance.AppCompat.Body1"
             android:id="@+id/titleTv"
