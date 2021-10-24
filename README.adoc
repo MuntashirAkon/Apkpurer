@@ -3,16 +3,11 @@
 image::fastlane/metadata/android/en-US/images/icon.png[width=100]
 
 image::https://fdroid.gitlab.io/artwork/badge/get-it-on.png[width=200, link=https://f-droid.org/en/packages/gh.cloneconf.apkpurer/]
-or see link:#downloads[Downloads] section.
+or link:https://github.com/cloneconf/Apkpurer/raw/master/app/release/app-release.apk[Download APK].
 
 Simple client for apkpure.com.
 
 image::showcase.gif[width=300]
-
-
-## Downloads:
-https://github.com/cloneconf/Apkpurer/releases/download/v3.0/app-release.apk[Download APK (v3)]
-
 
 ## Credits:
 All the libraries used are in https://github.com/cloneconf/Apkpurer/blob/c6f3e01e4492196b63309ad8d40c3c7af3e00e0d/app/build.gradle#L41-L74[build.gradle] file. 
