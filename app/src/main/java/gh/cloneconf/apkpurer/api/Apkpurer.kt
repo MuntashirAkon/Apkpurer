@@ -1,148 +1,121 @@
 package gh.cloneconf.apkpurer.api
 
-import android.content.Context
+import gh.cloneconf.apkpurer.Singleton.okhttp
 import gh.cloneconf.apkpurer.model.*
 import okhttp3.*
 import org.json.JSONArray
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import java.util.concurrent.TimeUnit
 
 
 object Apkpurer {
 
-    lateinit var client: OkHttpClient
+    fun suggestions(q: String): ArrayList<String> {
+        okhttp.newCall(
+            Request.Builder()
+                .url("https://apkpure.com/api/v1/search_suggestion?key=$q")
+                .header(
+                    "User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0"
+                )
+                .build()
+        ).execute().apply {
+            JSONArray(body()!!.string()).apply {
+                close()
 
-    fun init( c : Context){
-        client = OkHttpClient().newBuilder()
-            .followRedirects(false)
-            .followSslRedirects(false)
-            .retryOnConnectionFailure(false)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .cache(Cache(c.filesDir, 3000))
-            .build()
-    }
-
-
-    const val BASE = "apkpure.com/"
-
-
-    private var call : Call? = null
-
-    fun getString(url : String): String {
-        val request = Request.Builder()
-            .url(url)
-            .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0")
-            .build()
-
-        call = client.newCall(request)
-        return call!!.execute().body()!!.string()
-    }
-
-
-    fun getDoc(url : String): Document {
-        return Jsoup.parse(getString(url))
-    }
-
-
-
-    fun getSuggestions(q : String): ArrayList<String> {
-        return ArrayList<String>().apply {
-            JSONArray(getString("https://apkpure.com/api/v1/search_suggestion?key=$q")).also { json ->
-
-                for (i in 0 until json.length()){
-                    add(json.getJSONObject(i).getString("key"))
+                return ArrayList<String>().apply {
+                    for (i in 0 until length()) {
+                        add(getJSONObject(i).getString("key"))
+                    }
                 }
-
             }
         }
     }
 
-    fun getResults(q: String, page : Int): Search {
+
+    fun search(q: String, page: Int): Search {
         var url = "https://apkpure.com/search-page?q=$q&t=app&begin="
-        url += if (page > 1)
-            (page-1) * 15
-        else
-            0
-
-        val doc = getDoc(url)
-
-        return Search(
-            apps = ArrayList<App>().apply {
-                doc.select(".search-dl").forEach { dl ->
-                    add(
-                        App(
-                            name = dl.selectFirst(".search-title")!!.text(),
-                            logo = dl.selectFirst("img")!!.attr("src"),
-                            id = dl.selectFirst(".search-title a")!!.attr("href").split("/").last(),
-                            score = try {
-                                dl.selectFirst(".star")!!.text()
-                            }catch (e:Exception){null},
-                            dev = dl.select("p a")[1].text()
-                            //description = dl.selectFirst(".description .content")!!.html()
-                        )
-                    )
-                }
-            },
-            more = doc.select(".search-dl").size > 10
-        )
-        }
+        url += if (page > 1) (page - 1) * 15 else 0
 
 
-
-    fun getApp(id : String): AppPage {
-        val url = "https://apkpure.com/store/apps/details?id=$id"
-        val doc = getDoc(url)
-
-
-        return AppPage(
-            name = doc.select(".title-like h1").text(),
-            logo = doc.select(".icon img").attr("src"),
-            id= "df",
-            description =  doc.select(".description .content").html(),
-            images = ArrayList<Image>().apply {
-                doc.select("a.mpopup img").forEach {
-                    add(Image(
-                        thumb = it.attr("src"),
-                        original = it.attr("srcset").split(" ").first()
-                    ))
-                }
-            },
-            download = try {
-                doc.selectFirst(".ny-down a.da")!!.attr("href")
-            }catch (e:Exception){null},
-            score = try{
-                       doc.select(".rating .average").text()
-                   }catch (e:Exception){""},
-            dev = doc.select(".details-author > p > a").text(),
-            size = doc.selectFirst(".fsize")!!.text().replace(Regex("""[\(\)]"""), "")
-        )
-    }
-
-    fun getDevPage(dev : String): DevPage {
-        val url = "https://apkpure.com/developer/$dev"
-        val doc = getDoc(url)
-
-
-        return DevPage(
-            name = try {
-                doc.select("h1.developer-name").text()
-            }catch (e:Exception){dev},
-            apps = ArrayList<App>().apply {
-                    try {
-                        doc.select(".search-dl").forEach {
-                            add(App(
-                                id = it.select(".search-title a").attr("href"),
-                                name = it.select(".search-title").text(),
-                                logo = it.select("img").attr("src"),
-                                score = it.select(".star").text(),
-                                dev = dev
-                            ))
+        okhttp.newCall(
+            Request.Builder()
+                .url(url)
+                .build()
+        ).execute().apply {
+            Jsoup.parse(body()!!.string()).apply {
+                close()
+                return Search(
+                    apps = ArrayList<App>().apply {
+                        select(".search-dl").forEach { dl ->
+                            add(
+                                App(
+                                    name = dl.selectFirst(".search-title")!!.text(),
+                                    logo = dl.selectFirst("img")!!.attr("src"),
+                                    id = dl.selectFirst(".search-title a")!!.attr("href").split("/")
+                                        .last(),
+                                    score = try {
+                                        dl.selectFirst(".star")!!.text()
+                                    } catch (e: Exception) {
+                                        null
+                                    },
+                                    dev = dl.select("p a")[1].text()
+                                    //description = dl.selectFirst(".description .content")!!.html()
+                                )
+                            )
                         }
-                    }catch (e:Exception){}
-                }
-            )
+                    },
+                    more = select(".search-dl").size > 10
+                )
+
+            }
+        }
+
+    }
+
+
+    fun getApp(id: String): AppPage {
+        okhttp.newCall(
+            Request.Builder()
+                .url("https://apkpure.com/store/apps/details?id=$id")
+                .build()
+        ).execute().apply {
+            Jsoup.parse(body()!!.string()).apply {
+                close()
+                return AppPage(
+                    name = select(".title-like h1").text(),
+                    logo = select(".icon img").attr("src"),
+                    id = "df",
+                    description = select(".description .content").html(),
+                    images = ArrayList<Image>().apply {
+                        select("a.mpopup img").forEach {
+                            add(
+                                Image(
+                                    thumb = it.attr("src"),
+                                    original = it.attr("srcset").split(" ").first()
+                                )
+                            )
+                        }
+                    },
+                    download = try {
+                        selectFirst(".ny-down a.da")!!.attr("href")
+                    } catch (e: Exception) {
+                        null
+                    },
+                    score = try {
+                        select(".rating .average").text()
+                    } catch (e: Exception) {
+                        ""
+                    },
+                    dev = select(".details-author > p > a").text(),
+                    size = selectFirst(".fsize")!!.text().replace(Regex("""[\(\)]"""), "")
+                )
+            }
         }
     }
+
+
+
+}
 
 

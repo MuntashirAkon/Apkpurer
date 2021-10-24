@@ -24,7 +24,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         Thread.setDefaultUncaughtExceptionHandler { _, e ->
-            startActivity(Intent(this, CrashActivity::class.java))
+            startActivity(Intent(this, CrashActivity::class.java).apply {
+                putExtra("msg", e.stackTraceToString())
+            })
+            finish()
         }
 
         if (savedInstanceState == null)
@@ -41,8 +44,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun back(b : Boolean){
-        supportActionBar?.setDisplayHomeAsUpEnabled(b)
-        supportActionBar?.setDisplayHomeAsUpEnabled(b)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(b)
+        }?.setDisplayHomeAsUpEnabled(b)
     }
 
 }

@@ -7,8 +7,6 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +26,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
 
 
     private val adapter by lazy { Adapter() }
+
     private val suggestions = ArrayList<String>()
 
     private lateinit var binds : FragmentSearchBinding
@@ -94,7 +93,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
 
         job = lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val suggestions = Apkpurer.getSuggestions(binds.searchEd.text.toString())
+                val suggestions = Apkpurer.suggestions(binds.searchEd.text.toString())
                 withContext(Dispatchers.Main) {
 
                     if (suggestions.isEmpty()) {

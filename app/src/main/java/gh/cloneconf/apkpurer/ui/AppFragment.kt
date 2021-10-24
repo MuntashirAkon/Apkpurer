@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
+import gh.cloneconf.apkpurer.Singleton.okhttp
 import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.databinding.FragmentAppBinding
 import gh.cloneconf.apkpurer.databinding.ItemImageBinding
@@ -31,6 +32,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Request
+import org.jsoup.Jsoup
 import java.lang.Exception
 
 class AppFragment : Fragment(R.layout.fragment_app) {
@@ -177,26 +180,32 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
             if (app.download != null) {
 
-                val doc = Apkpurer.getDoc("https://apkpure.com" + app.download)
+                okhttp.newCall(Request.Builder()
+                    .url("https://apkpure.com${app.download}")
+                    .build()).execute().apply {
+                    Jsoup.parse(body()!!.string()).apply {
+                        close()
+                        withContext(Dispatchers.Main) {
+                            binds.downloadBtn.isEnabled = true
 
-                withContext(Dispatchers.Main) {
-                    binds.downloadBtn.isEnabled = true
+                            binds.downloadBtn.setOnClickListener {
 
-                    binds.downloadBtn.setOnClickListener {
+                                val url = select("#iframe_download").attr("src")
+                                try {
+                                    val i = Intent(Intent.ACTION_VIEW)
+                                    i.data = Uri.parse(url)
+                                    startActivity(i)
+                                }catch (e:Exception){
+                                    Toast.makeText(requireContext(), "No Browser founded.. (Copied !)", Toast.LENGTH_SHORT).show()
 
-                        val url = doc.select("#iframe_download").attr("src")
-                        try {
-                            val i = Intent(Intent.ACTION_VIEW)
-                            i.data = Uri.parse(url)
-                            startActivity(i)
-                        }catch (e:Exception){
-                            Toast.makeText(requireContext(), "No Browser founded.. (Copied !)", Toast.LENGTH_SHORT).show()
-
-                            (requireContext() as MainActivity).clipboardManager.setPrimaryClip(
-                                ClipData.newPlainText("url", url))
+                                    (requireContext() as MainActivity).clipboardManager.setPrimaryClip(
+                                        ClipData.newPlainText("url", url))
+                                }
+                            }
                         }
                     }
                 }
+
             }else{
 
                 withContext(Dispatchers.Main){

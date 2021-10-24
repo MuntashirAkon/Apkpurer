@@ -5,11 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import gh.cloneconf.apkpurer.databinding.FragmentCrashBinding
+import gh.cloneconf.apkpurer.databinding.ActivityCrashBinding
 
 class CrashActivity : Activity() {
 
-    private lateinit var binds : FragmentCrashBinding
+    private lateinit var binds : ActivityCrashBinding
     private lateinit var msg : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +17,7 @@ class CrashActivity : Activity() {
 
         msg = intent.getStringExtra("msg")!!
 
-        binds = FragmentCrashBinding.inflate(layoutInflater).apply {
+        binds = ActivityCrashBinding.inflate(layoutInflater).apply {
             setContentView(root)
 
             msgTv.text = msg
@@ -33,6 +33,12 @@ class CrashActivity : Activity() {
                 }else{
                     Toast.makeText(this@CrashActivity, "Error :/", Toast.LENGTH_SHORT).show()
                 }
+            }
+
+
+            restartBtn.setOnClickListener {
+                startActivity(Intent(this@CrashActivity, MainActivity::class.java))
+                finish()
             }
         }
 

@@ -211,7 +211,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
         if (page == 1)
             adapter.add(1)
         jobs.add(lifecycleScope.launch(Dispatchers.IO) {
-            val results = Apkpurer.getResults(q, page)
+            val results = Apkpurer.search(q, page)
 
             more = results.more
 

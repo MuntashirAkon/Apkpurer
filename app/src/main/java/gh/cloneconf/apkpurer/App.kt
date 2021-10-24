@@ -6,6 +6,6 @@ import gh.cloneconf.apkpurer.api.Apkpurer
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        Apkpurer.init(applicationContext)
+        Singleton.init(applicationContext)
     }
 }
