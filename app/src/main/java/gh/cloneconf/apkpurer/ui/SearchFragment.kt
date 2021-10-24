@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,9 +26,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
     TextView.OnEditorActionListener {
 
 
-    private val adapter by lazy { Adapter() }
-
-    private val suggestions = ArrayList<String>()
+    private val adapter by lazy { ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1) }
 
     private lateinit var binds : FragmentSearchBinding
 
@@ -36,11 +35,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binds = FragmentSearchBinding.inflate(inflater)
         return binds.root
     }
@@ -60,16 +55,17 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
         binds.searchEd.setOnEditorActionListener(this)
 
         binds.apply {
-            suggestionsRv.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-            }.adapter = adapter
+            suggestionsLv.adapter = adapter
+            suggestionsLv.setOnItemClickListener { parent, view, position, id ->
+                showResults(adapter.getItem(position)!!)
+            }
         }
 
     }
 
 
 
-    var job : Job? = null
+    private var job : Job? = null
 
 
     /**
@@ -84,7 +80,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
 
         if (q.isEmpty()) {
             binds.statusIv.setImageResource(R.drawable.ic_baseline_tag_faces_24)
-            suggestions.clear()
+            adapter.clear()
             adapter.notifyDataSetChanged()
             return
         }
@@ -102,7 +98,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
                     }
 
                     binds.statusIv.setImageResource(R.drawable.ic_baseline_check_24)
-                    this@SearchFragment.suggestions.apply {
+                    adapter.apply {
                         clear()
                     }.addAll(suggestions)
                     adapter.notifyDataSetChanged()
@@ -135,16 +131,18 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
             ViewHolder(layoutInflater.inflate(R.layout.item_suggestion, parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val suggestion = adapter.getItem(position)!!
+
             holder.binds.apply {
-                nameTv.text = suggestions[position]
+                nameTv.text = suggestion
 
                 root.setOnClickListener {
-                    showResults(suggestions[position])
+                    showResults(suggestion)
                 }
             }
         }
 
-        override fun getItemCount() = suggestions.size
+        override fun getItemCount() = adapter.count
     }
 
 
@@ -183,7 +181,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
     override fun onPause() {
         super.onPause()
         binds.searchEd.text.clear()
-        suggestions.clear()
+        adapter.clear()
         adapter.notifyDataSetChanged()
 
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)

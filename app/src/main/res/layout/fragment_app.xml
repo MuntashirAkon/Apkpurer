@@ -6,11 +6,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,11 +19,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:orientation="vertical"
+                android:background="@color/primary_dark"
                 android:gravity="center"
+                android:orientation="vertical"
                 android:paddingTop="40dp"
-                android:paddingBottom="40dp"
-                android:background="@color/primary_dark">
+                android:paddingBottom="40dp">
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -39,21 +38,22 @@
 
                 <TextView
                     android:id="@+id/titleTv"
+                    style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="App Name"
-                    android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
-                    style="@style/TextAppearance.AppCompat.Headline"/>
+                    tools:text="App Name" />
+
                 <TextView
                     android:id="@+id/devTv"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Developer"
                     android:layout_marginTop="10dp"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/primary"/>
+                    android:textColor="@color/primary"
+                    tools:text="Developer" />
 
             </LinearLayout>
 
@@ -62,23 +62,25 @@
                 android:id="@+id/cProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminate="true"
                 android:layout_gravity="center"
-                android:padding="20dp"/>
+                android:indeterminate="true"
+                android:padding="20dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/imagesRv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:nestedScrollingEnabled="false"/>
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"/>
 
             <TextView
-                android:padding="20dp"
                 android:id="@+id/descTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet.., comes from a line in section 1.10.32."/>
+                android:padding="20dp"
+                tools:text="Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet.., comes from a line in section 1.10.32." />
 
 
         </LinearLayout>

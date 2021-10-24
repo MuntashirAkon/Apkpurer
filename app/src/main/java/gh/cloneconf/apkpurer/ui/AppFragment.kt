@@ -1,5 +1,6 @@
 package gh.cloneconf.apkpurer.ui
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Bitmap
@@ -8,10 +9,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.text.Html
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -19,9 +17,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
+import gh.cloneconf.apkpurer.Singleton.gson
 import gh.cloneconf.apkpurer.Singleton.okhttp
 import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.databinding.FragmentAppBinding
@@ -34,25 +32,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import org.jsoup.Jsoup
-import java.lang.Exception
+
 
 class AppFragment : Fragment(R.layout.fragment_app) {
 
 
-    val settings by lazy {
-        (requireActivity() as MainActivity).settings
-    }
-
-    val app by lazy {
-        Gson().fromJson(
-            requireArguments().getString("app")!!,
-            App::class.java
-        )
-    }
-
+    private val activity by lazy { requireActivity() as MainActivity }
+    private val settings by lazy { activity.settings }
     private lateinit var binds : FragmentAppBinding
+    private val app by lazy { gson.fromJson(requireArguments().getString("app")!!, App::class.java) }
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binds = FragmentAppBinding.inflate(inflater)
         return binds.root
@@ -88,8 +82,8 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
             holder.binds.imageIv.setOnClickListener {
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fContainer, GalleryFragment.newInstance(images, position))
                     .addToBackStack(null)
+                    .add(R.id.fContainer, GalleryFragment.newInstance(images, position))
                     .commit()
             }
 
@@ -131,6 +125,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun download(){
 
         if (settings.liteMode) {
@@ -189,7 +184,6 @@ class AppFragment : Fragment(R.layout.fragment_app) {
                             binds.downloadBtn.isEnabled = true
 
                             binds.downloadBtn.setOnClickListener {
-
                                 val url = select("#iframe_download").attr("src")
                                 try {
                                     val i = Intent(Intent.ACTION_VIEW)
@@ -216,5 +210,19 @@ class AppFragment : Fragment(R.layout.fragment_app) {
         }
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.app_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.open) {
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse("https://apkpure.com/store/apps/details?id=${app.id}")
+            startActivity(i)
+            true
+        } else false
+    }
 
 }

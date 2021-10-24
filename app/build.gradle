@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -66,10 +66,6 @@ dependencies {
 
     // Zoom Image
     implementation 'com.jsibbold:zoomage:1.3.1'
-
-    // Testing .. ( which really.. i don't use ¯\_(ツ)_/¯ )
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
 }

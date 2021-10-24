@@ -25,7 +25,6 @@ class CrashActivity : Activity() {
             sendBtn.setOnClickListener {
                 val intent = Intent(Intent.ACTION_SENDTO)
                 intent.data = Uri.parse("mailto:") // only email apps should handle this
-
                 intent.putExtra(Intent.EXTRA_EMAIL, "cloneconf@gmail.com")
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Apkpurer crash: ")
                 if (intent.resolveActivity(packageManager) != null) {

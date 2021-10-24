@@ -29,8 +29,8 @@
             android:hint="Start searching ..."/>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/suggestionsRv"
+    <ListView
+        android:id="@+id/suggestionsLv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
