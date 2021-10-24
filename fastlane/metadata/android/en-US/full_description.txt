@@ -1,7 +1,6 @@
 Simple client for apkpure.
 
-Feel free to submit an issue on github:
-https://github.com/cloneconf/Apkpurer
+This app isn't an full feature alternative to apkpure.
 
-showcase:
+GIF showcase:
 https://github.com/cloneconf/Apkpurer/raw/master/showcase.gif
