@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +18,9 @@ import com.google.gson.Gson
 import gh.cloneconf.apkpurer.api.Apkpurer
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
+import gh.cloneconf.apkpurer.databinding.FragmentResultsBinding
+import gh.cloneconf.apkpurer.databinding.ItemResultBinding
 import gh.cloneconf.apkpurer.model.App
-import kotlinx.android.synthetic.main.fragment_results.*
-import kotlinx.android.synthetic.main.item_result.view.*
 import kotlinx.coroutines.*
 import java.lang.Exception
 
@@ -36,6 +37,16 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
         (requireActivity() as MainActivity).settings
     }
 
+    private lateinit var binds : FragmentResultsBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binds = FragmentResultsBinding.inflate(inflater)
+        return binds.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,18 +58,18 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
         }
 
 
-        resultsRv.layoutManager = LinearLayoutManager(requireContext())
-        resultsRv.adapter = adapter
+        binds.resultsRv.layoutManager = LinearLayoutManager(requireContext())
+        binds.resultsRv.adapter = adapter
 
 
         if (page == 1) {
             download()
         }
 
-        resultsRv.viewTreeObserver.addOnScrollChangedListener {
+        binds.resultsRv.viewTreeObserver.addOnScrollChangedListener {
             if (more && !busy)
                 try {
-                    if (!resultsRv.canScrollVertically(1)) {
+                    if (!binds.resultsRv.canScrollVertically(1)) {
                         download()
                     }
                 }catch (e:Exception){}
@@ -82,9 +93,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
         }
 
         inner class ResultViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-            val titleTv = itemView.titleTv
-            val logoIv = itemView.logoIv
-            val devTv = itemView.devTv
+            val binds = ItemResultBinding.bind(itemView)
         }
 
         inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){}
@@ -109,9 +118,9 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                             showApp(result)
                         }
 
-                        holder.titleTv.text = result.name
+                        holder.binds.titleTv.text = result.name
 
-                        holder.devTv.text = result.dev
+                        holder.binds.devTv.text = result.dev
 
 
 
@@ -123,7 +132,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
 
 
                         if (settings.liteMode) {
-                            holder.logoIv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.mipmap.ic_launcher))
+                            holder.binds.logoIv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.mipmap.ic_launcher))
                         }else{
                             val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
 
@@ -134,7 +143,7 @@ class ResultsFragment : Fragment(R.layout.fragment_results) {
                             Glide.with(this@ResultsFragment)
                                 .load(result.logo)
                                 .placeholder(BitmapDrawable(requireContext().resources, bm))
-                                .into(holder.logoIv)
+                                .into(holder.binds.logoIv)
 
                         }
 

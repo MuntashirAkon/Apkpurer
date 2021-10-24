@@ -18,7 +18,6 @@ import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
 import gh.cloneconf.apkpurer.databinding.FragmentSearchBinding
 import gh.cloneconf.apkpurer.databinding.ItemSuggestionBinding
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -58,8 +57,8 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
         }
 
 
-        searchEd.addTextChangedListener(this)
-        searchEd.setOnEditorActionListener(this)
+        binds.searchEd.addTextChangedListener(this)
+        binds.searchEd.setOnEditorActionListener(this)
 
         binds.apply {
             suggestionsRv.apply {
@@ -82,28 +81,28 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         job?.cancel()
 
-        val q = searchEd.text.toString()
+        val q = binds.searchEd.text.toString()
 
         if (q.isEmpty()) {
-            statusIv.setImageResource(R.drawable.ic_baseline_tag_faces_24)
+            binds.statusIv.setImageResource(R.drawable.ic_baseline_tag_faces_24)
             suggestions.clear()
             adapter.notifyDataSetChanged()
             return
         }
 
-        statusIv.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
+        binds.statusIv.setImageResource(R.drawable.ic_baseline_hourglass_bottom_24)
 
         job = lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val suggestions = Apkpurer.getSuggestions(searchEd.text.toString())
+                val suggestions = Apkpurer.getSuggestions(binds.searchEd.text.toString())
                 withContext(Dispatchers.Main) {
 
                     if (suggestions.isEmpty()) {
-                        statusIv.setImageResource(R.drawable.ic_baseline_not_interested_24)
+                        binds.statusIv.setImageResource(R.drawable.ic_baseline_not_interested_24)
                         return@withContext
                     }
 
-                    statusIv.setImageResource(R.drawable.ic_baseline_check_24)
+                    binds.statusIv.setImageResource(R.drawable.ic_baseline_check_24)
                     this@SearchFragment.suggestions.apply {
                         clear()
                     }.addAll(suggestions)
@@ -111,7 +110,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
                 }
             }catch (e:Exception){
                 withContext(Dispatchers.Main){
-                    statusIv.setImageResource(R.drawable.ic_baseline_wifi_off_24)
+                    binds.statusIv.setImageResource(R.drawable.ic_baseline_wifi_off_24)
                 }
             }
         }
@@ -122,7 +121,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
      * On enter.
      */
     override fun onEditorAction(p0: TextView?, p1: Int, p2: KeyEvent?): Boolean {
-        showResults(searchEd.text.toString())
+        showResults(binds.searchEd.text.toString())
         return true
     }
 
@@ -173,9 +172,9 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
     override fun onResume() {
         super.onResume()
 
-        if(searchEd.requestFocus()) {
+        if(binds.searchEd.requestFocus()) {
             (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                .showSoftInput(searchEd, InputMethodManager.SHOW_IMPLICIT)
+                .showSoftInput(binds.searchEd, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
@@ -184,12 +183,12 @@ class SearchFragment : Fragment(R.layout.fragment_search), TextWatcher,
      */
     override fun onPause() {
         super.onPause()
-        searchEd.text.clear()
+        binds.searchEd.text.clear()
         suggestions.clear()
         adapter.notifyDataSetChanged()
 
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-            .hideSoftInputFromWindow(searchEd.windowToken, 0)
+            .hideSoftInputFromWindow(binds.searchEd.windowToken, 0)
 
     }
 

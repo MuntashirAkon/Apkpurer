@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -22,13 +23,10 @@ import com.google.gson.Gson
 import gh.cloneconf.apkpurer.MainActivity
 import gh.cloneconf.apkpurer.R
 import gh.cloneconf.apkpurer.api.Apkpurer
+import gh.cloneconf.apkpurer.databinding.FragmentAppBinding
+import gh.cloneconf.apkpurer.databinding.ItemImageBinding
 import gh.cloneconf.apkpurer.model.App
 import gh.cloneconf.apkpurer.model.Image
-import kotlinx.android.synthetic.main.fragment_app.*
-import kotlinx.android.synthetic.main.item_image.view.*
-import kotlinx.android.synthetic.main.item_result.logoIv
-import kotlinx.android.synthetic.main.item_result.titleTv
-import kotlinx.android.synthetic.main.item_zoom_image.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -49,14 +47,21 @@ class AppFragment : Fragment(R.layout.fragment_app) {
         )
     }
 
+    private lateinit var binds : FragmentAppBinding
 
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binds = FragmentAppBinding.inflate(inflater)
+        return binds.root
+    }
 
     inner class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>(){
 
         val images = ArrayList<Image>()
 
-        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {}
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val binds = ItemImageBinding.bind(itemView)
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(layoutInflater.inflate(R.layout.item_image, parent, false))
@@ -74,11 +79,11 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             Glide.with(this@AppFragment)
                 .load(images[position].thumb)
                 .placeholder(BitmapDrawable(requireContext().resources, bm))
-                .into(holder.itemView.imageIv)
+                .into(holder.binds.imageIv)
 
 
 
-            holder.itemView.imageIv.setOnClickListener {
+            holder.binds.imageIv.setOnClickListener {
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.fContainer, GalleryFragment.newInstance(images, position))
                     .addToBackStack(null)
@@ -115,7 +120,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             back(true)
         }
 
-        titleTv.text = app.name
+        binds.titleTv.text = app.name
 
         download()
 
@@ -126,7 +131,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
     private fun download(){
 
         if (settings.liteMode) {
-            logoIv.visibility = View.GONE
+            binds.logoIv.visibility = View.GONE
         }else {
             val bm = Bitmap.createBitmap(170, 170, Bitmap.Config.ARGB_8888)
 
@@ -137,17 +142,17 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             Glide.with(this)
                 .load(app.logo)
                 .placeholder(BitmapDrawable(requireContext().resources, bm))
-                .into(logoIv)
+                .into(binds.logoIv)
 
 
 
 
-            imagesRv.layoutManager =
+            binds.imagesRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            imagesRv.adapter = adapter
+            binds.imagesRv.adapter = adapter
         }
 
-        devTv.text = app.dev
+        binds.devTv.text = app.dev
 
         job = lifecycleScope.launch(Dispatchers.IO) {
             val app =
@@ -155,17 +160,17 @@ class AppFragment : Fragment(R.layout.fragment_app) {
 
             withContext(Dispatchers.Main){
 
-                cProgress.visibility = View.GONE
-                downloadBtn.visibility = View.VISIBLE
+                binds.cProgress.visibility = View.GONE
+                binds.downloadBtn.visibility = View.VISIBLE
 
 
-                descTv.text = HtmlCompat.fromHtml(app.description, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                binds.descTv.text = HtmlCompat.fromHtml(app.description, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
 
                 adapter.images.addAll(app.images)
                 adapter.notifyDataSetChanged()
 
-                downloadBtn.text = app.size
+                binds.downloadBtn.text = app.size
             }
 
 
@@ -175,9 +180,9 @@ class AppFragment : Fragment(R.layout.fragment_app) {
                 val doc = Apkpurer.getDoc("https://apkpure.com" + app.download)
 
                 withContext(Dispatchers.Main) {
-                    downloadBtn.isEnabled = true
+                    binds.downloadBtn.isEnabled = true
 
-                    downloadBtn.setOnClickListener {
+                    binds.downloadBtn.setOnClickListener {
 
                         val url = doc.select("#iframe_download").attr("src")
                         try {
@@ -195,7 +200,7 @@ class AppFragment : Fragment(R.layout.fragment_app) {
             }else{
 
                 withContext(Dispatchers.Main){
-                    downloadBtn.text = "ERROR!"
+                    binds.downloadBtn.text = "ERROR!"
                 }
 
             }

@@ -1,11 +1,11 @@
 package gh.cloneconf.apkpurer
 
 import android.content.ClipboardManager
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import gh.cloneconf.apkpurer.api.SettingsApi
 import gh.cloneconf.apkpurer.databinding.ActivityMainBinding
-import gh.cloneconf.apkpurer.ui.CrashFragment
 import gh.cloneconf.apkpurer.ui.SearchFragment
 
 class MainActivity : AppCompatActivity() {
@@ -24,12 +24,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         Thread.setDefaultUncaughtExceptionHandler { _, e ->
-            supportFragmentManager.fragments.forEach { _ ->
-                supportFragmentManager.popBackStack()
-            }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fContainer, CrashFragment.newInstance(e.stackTraceToString()))
-                .commit()
+            startActivity(Intent(this, CrashActivity::class.java))
         }
 
         if (savedInstanceState == null)
