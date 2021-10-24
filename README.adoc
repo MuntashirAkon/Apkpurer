@@ -10,4 +10,4 @@ Simple client for apkpure.com.
 image::showcase.gif[width=300]
 
 ## Credits:
-All the libraries used are in https://github.com/cloneconf/Apkpurer/blob/c6f3e01e4492196b63309ad8d40c3c7af3e00e0d/app/build.gradle#L41-L74[build.gradle] file. 
+All the libraries used are in https://github.com/cloneconf/Apkpurer/blob/d894b9d707ab5f2c6ce364241aee82ac3b4a3e1e/app/build.gradle#L40-L69[build.gradle] file. 
