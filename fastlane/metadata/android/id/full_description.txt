@@ -1,0 +1,6 @@
+Klien sederhana untuk APKPure.
+
+Aplikasi ini bukan alternatif penuh fitur untuk APKPure.
+
+Contoh penggunaan dalam GIF:
+https://github.com/cloneconf/Apkpurer/raw/master/showcase.gif
